@@ -11,7 +11,7 @@ https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE
 ## Building the C++ library
 
 ```shell
-git clone git@github.com:BlueBrain/libsonatareport.git --recursive
+git clone --recursive git@github.com:openbraininstitute/libsonatareport.git
 cd libsonatareport
 cmake -B build -DCMAKE_BUILD_TYPE=Release -DSONATA_REPORT_ENABLE_SUBMODULES=ON -GNinja
 cmake --build build

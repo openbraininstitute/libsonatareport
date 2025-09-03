@@ -91,6 +91,7 @@ jobs:
         . ./venv/bin/activate
         python -m pip install --upgrade pip setuptools
         pip install cython numpy wheel pkgconfig
+        MPICC=mpicc pip install --no-binary=mpi4py mpi4py
 
     - name: Add virtual environment to PATH
       run: echo "${{ github.workspace }}/venv/bin" >> $GITHUB_PATH

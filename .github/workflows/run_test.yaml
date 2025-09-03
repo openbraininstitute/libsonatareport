@@ -8,23 +8,25 @@ jobs:
         runs-on: ${{ matrix.os }}
         strategy:
             matrix:
-                os: [ ubuntu-20.04 ]
+                os: [ ubuntu-22.04 ]
                 config:
                   - {cmake_option: "-DSONATA_REPORT_ENABLE_SUBMODULES=ON -DSONATA_REPORT_ENABLE_CONVERTER=ON", mpi: ON}
                   - {cmake_option: "-DSONATA_REPORT_ENABLE_SUBMODULES=ON -DSONATA_REPORT_ENABLE_MPI=OFF -DSONATA_REPORT_ENABLE_CONVERTER=ON", mpi: OFF}
         steps:
-            - name: Checkout repository
-              uses: actions/checkout@v2
             - name: Fetch repository
-              run: git fetch --prune --unshallow
-            - name: Get submodules
-              run: git submodule update --init --force --recursive
+              uses: actions/checkout@v4
+              with:
+                fetch-depth: 0
+                submodules: recursive
+
             - name: Install parallel packages
               if: ${{ matrix.config.mpi == 'ON' }}
               run: sudo apt-get install mpich libmpich-dev libhdf5-mpich-dev hdf5-tools
+
             - name: Install serial packages
               if: ${{ matrix.config.mpi == 'OFF' }}
               run: sudo apt-get install libhdf5-dev hdf5-tools
+
             - name: Build and run tests
               run: mkdir BUILD && cd BUILD && cmake ${cmake_option} .. && make all && ctest --output-on-failure
               env:

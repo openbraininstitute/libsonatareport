@@ -5,18 +5,20 @@ on:
 jobs:
     build:
         name: coverage-test
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         steps:
-            - name: Checkout repository
-              uses: actions/checkout@v2
             - name: Fetch repository
-              run: git fetch --prune --unshallow
-            - name: Get submodules
-              run: git submodule update --init --force --recursive
+              uses: actions/checkout@v4
+              with:
+                fetch-depth: 1
+                submodules: recursive
+
             - name: Install packages
               run: sudo apt-get install build-essential libhdf5-dev hdf5-tools lcov
+
             - name: Build and run unittests
               run: ci/coverage_test.sh
+
             - name: Upload Coverage to Coveralls
               uses: coverallsapp/github-action@master
               with:

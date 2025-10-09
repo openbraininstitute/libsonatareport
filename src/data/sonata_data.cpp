@@ -281,7 +281,7 @@ void SonataData::convert_gids_to_sonata(std::vector<uint64_t>& node_ids,
         std::transform(std::begin(node_ids),
                        std::end(node_ids),
                        std::begin(node_ids),
-                       [& population_offset = population_offset](int x) {
+                       [&population_offset = population_offset](int x) {
                            return x - population_offset;
                        });
     }

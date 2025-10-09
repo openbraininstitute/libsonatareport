@@ -287,6 +287,7 @@ void SonataData::convert_gids_to_sonata(std::vector<uint64_t>& node_ids,
     }
 }
 
+
 void SonataData::write_report_header() {
     // TODO: remove configure_group and add it to write_any()
     const std::string reports_population_group = "/report/" + population_name_;

@@ -266,18 +266,20 @@ void SonataData::prepare_dataset() {
 
 void SonataData::convert_gids_to_sonata(std::vector<uint64_t>& node_ids,
                                         uint64_t population_offset) {
-    if (getenv("LIBSONATA_ZERO_BASED_GIDS") == nullptr) {
-        std::transform(std::begin(node_ids),
-                       std::end(node_ids),
-                       std::begin(node_ids),
-                       [& population_offset = population_offset](int x) {
+    bool zero_based = getenv("LIBSONATA_ZERO_BASED_GIDS") != nullptr;
+
+    std::transform(node_ids.begin(), node_ids.end(), node_ids.begin(),
+                   [zero_based, population_offset](uint64_t x) -> uint64_t {
+                       if (!zero_based) {
                            if (x == 0) {
                                throw std::runtime_error(
                                    "Error: node_id is 0 and input data is reported as 1-based");
                            }
                            return x - population_offset - 1;
-                       });
-    }
+                       } else {
+                           return x - population_offset;
+                       }
+                   });
 }
 
 void SonataData::write_report_header() {

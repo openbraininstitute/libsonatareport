@@ -266,12 +266,12 @@ void SonataData::prepare_dataset() {
 
 void SonataData::convert_gids_to_sonata(std::vector<uint64_t>& node_ids,
                                         uint64_t population_offset) {
-    bool zero_based = getenv("LIBSONATA_ZERO_BASED_GIDS") != nullptr;
+    const bool zero_based = getenv("LIBSONATA_ZERO_BASED_GIDS") != nullptr;
 
     std::transform(node_ids.begin(),
                    node_ids.end(),
                    node_ids.begin(),
-                   [zero_based, population_offset](uint64_t x) -> uint64_t {
+                   [zero_based, population_offset](int x) -> uint64_t {
                        if (!zero_based) {
                            if (x == 0) {
                                throw std::runtime_error(

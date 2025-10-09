@@ -271,7 +271,7 @@ void SonataData::convert_gids_to_sonata(std::vector<uint64_t>& node_ids,
     std::transform(node_ids.begin(),
                    node_ids.end(),
                    node_ids.begin(),
-                   [zero_based, population_offset](int x) -> uint64_t {
+                   [zero_based, population_offset](int x) {
                        if (!zero_based) {
                            if (x == 0) {
                                throw std::runtime_error(

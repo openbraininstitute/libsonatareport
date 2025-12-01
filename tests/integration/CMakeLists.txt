@@ -22,3 +22,9 @@ add_test(NAME reports_integration_test
     COMMAND "/bin/sh" ${CMAKE_CURRENT_BINARY_DIR}/integration_test.sh
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
 )
+
+set_tests_properties(
+    reports_integration_test
+    PROPERTIES
+        ENVIRONMENT "LIBSONATAREPORT_ONE_BASED_GIDS=1"
+)

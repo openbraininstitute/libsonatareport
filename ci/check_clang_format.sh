@@ -6,6 +6,11 @@ DIRS_TO_FORMAT="src include"
 
 set -euo pipefail
 
+FIX_MODE=false
+if [[ "${1:-}" == "--fix" ]]; then
+    FIX_MODE=true
+fi
+
 VENV=build/venv-clang-format
 CLANG_FORMAT_VERSION=20.1.5
 
@@ -21,13 +26,18 @@ set -u
 changes_from="$(git merge-base HEAD remotes/origin/master)"
 echo "Changes from: $changes_from"
 
-changes=$(git-clang-format $changes_from $DIRS_TO_FORMAT || true)
-echo $changes
-if [[ $(echo "$changes" | grep -n1 'changed files') ]]; then
-    echo "The following files require changes to pass the current clang-format"
-    echo "$changes"
-    echo ""
-    echo "This is the diff:"
-    git diff
-    exit 1
+if [[ "$FIX_MODE" == "true" ]]; then
+    git-clang-format $changes_from $DIRS_TO_FORMAT
+    echo "Applied clang-format fixes"
+else
+    changes=$(git-clang-format $changes_from $DIRS_TO_FORMAT || true)
+    echo $changes
+    if [[ $(echo "$changes" | grep -n1 'changed files') ]]; then
+        echo "The following files require changes to pass the current clang-format"
+        echo "$changes"
+        echo ""
+        echo "This is the diff:"
+        git diff
+        exit 1
+    fi
 fi

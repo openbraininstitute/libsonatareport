@@ -21,25 +21,25 @@ SCENARIO("Test SonataData class", "[SonataData][IOWriter]") {
         double tend = 3.0;
         sonata_set_atomic_step(dt);
         using nodes_t = std::map<uint64_t, std::shared_ptr<Node>>;
-        auto node = std::make_shared<Node>(101);
+        auto node = std::make_shared<Node>(100);
         double element = 10;
         double element2 = 12;
         node->add_element(&element, 0);
         node->add_element(&element2, 1);
-        auto node2 = std::make_shared<Node>(102);
-        node2->add_element(&element, 10);
-        node2->add_element(&element2, 11);
-        node2->add_element(&element2, 12);
-        auto node42 = std::make_shared<Node>(142);
+        auto node1 = std::make_shared<Node>(101);
+        node1->add_element(&element, 10);
+        node1->add_element(&element2, 11);
+        node1->add_element(&element2, 12);
+        auto node41 = std::make_shared<Node>(141);
         std::vector<double> elements{34.1, 55.21, 3.141592, 44, 2124, 42.42};
         int i = 20;
         for (double& elem : elements) {
-            node42->add_element(&elem, i);
+            node41->add_element(&elem, i);
             ++i;
         }
         WHEN("We record some data and prepare the dataset for a big enough max buffer size") {
             auto nodes = std::make_shared<nodes_t>(std::initializer_list<nodes_t::value_type>{
-                {101, node}, {102, node2}, {142, node42}});
+                {100, node}, {101, node1}, {141, node41}});
 
             int num_steps = 3;
             size_t max_buffer_size = 1024;
@@ -56,8 +56,8 @@ SCENARIO("Test SonataData class", "[SonataData][IOWriter]") {
                                                        report_units,
                                                        nodes,
                                                        file_handler);
-            std::vector<uint64_t> nodeids_1 = {101, 142};
-            std::vector<uint64_t> nodeids_2 = {102};
+            std::vector<uint64_t> nodeids_1 = {100, 141};
+            std::vector<uint64_t> nodeids_2 = {101};
 
             sonata->prepare_dataset();
             for (int i = 0; i < num_steps; i++) {
@@ -77,17 +77,21 @@ SCENARIO("Test SonataData class", "[SonataData][IOWriter]") {
 
             THEN("We check the node ids of the sonata report") {
                 const std::vector<uint64_t> node_ids = sonata->get_node_ids();
-                std::vector<uint64_t> compare = {101, 102, 142};
+                std::vector<uint64_t> compare = {100, 101, 141};
                 REQUIRE(node_ids == compare);
             }
 
             THEN("We check the node ids of the sonata report after applying offset") {
                 const std::vector<uint64_t> node_ids = sonata->get_node_ids();
                 std::vector<uint64_t> sonata_node_ids(node_ids);
-                sonata->convert_gids_to_sonata(sonata_node_ids, population_offset);
                 std::vector<uint64_t> compare = {0, 1, 41};
+                sonata->convert_gids_to_sonata(sonata_node_ids, population_offset);
                 REQUIRE(sonata_node_ids == compare);
+                // throw if gid is 0-based and LIBSONATAREPORT_ONE_BASED_GIDS=1
+                setenv("LIBSONATAREPORT_ONE_BASED_GIDS", "1", 1);
                 REQUIRE_THROWS(sonata->convert_gids_to_sonata(sonata_node_ids, population_offset));
+                // revert to 0-based default to not pollute the other tests
+                unsetenv("LIBSONATAREPORT_ONE_BASED_GIDS");
             }
 
             THEN("We check the element ids of the sonata report") {
@@ -104,7 +108,7 @@ SCENARIO("Test SonataData class", "[SonataData][IOWriter]") {
         }
         WHEN("We record some other data and prepare the dataset for a small max buffer size") {
             auto nodes = std::make_shared<nodes_t>(std::initializer_list<nodes_t::value_type>{
-                {101, node}, {102, node2}, {142, node42}});
+                {100, node}, {101, node1}, {141, node41}});
             int num_steps = 3;
             size_t max_buffer_size = 128;
             std::string report_name = "test_sonatadata2";

@@ -276,8 +276,8 @@ void SonataData::convert_gids_to_sonata(std::vector<uint64_t>& node_ids,
                 ss << "Error: negative raw GID detected ( gid with offset: " << x
                    << " < offset: " << offset << "). ";
                 if (getenv("LIBSONATAREPORT_ONE_BASED_GIDS") != nullptr) {
-                    ss << "LIBSONATAREPORT_ONE_BASED_GIDS=1 is set but the provided GIDs are "
-                          "probably 0-based.";
+                    ss << "LIBSONATAREPORT_ONE_BASED_GIDS is set but the provided GIDs are "
+                          "probably 0-based. Please unset it";
                 } else {
                     ss << "Since LIBSONATAREPORT_ONE_BASED_GIDS is not set there is probably a "
                           "mismatch between the provided GIDs and the population offset.";

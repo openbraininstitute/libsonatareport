@@ -280,7 +280,7 @@ void SonataData::convert_gids_to_sonata(std::vector<uint64_t>& node_ids,
                           "probably 0-based.";
                 } else {
                     ss << "Since LIBSONATAREPORT_ONE_BASED_GIDS is not set there is probably a "
-                          "missmatch between the provided GIDs and the population offset.";
+                          "mismatch between the provided GIDs and the population offset.";
                 }
                 throw std::runtime_error(ss.str());
             }

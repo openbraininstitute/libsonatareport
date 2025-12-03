@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# the references were created with this legagy setup
+# the references were created with this legacy setup
 export LIBSONATAREPORT_ONE_BASED_GIDS=1
 @PROJECT_BINARY_DIR@/tools/converter/spikes_converter @CMAKE_CURRENT_SOURCE_DIR@/spikes.ref
 @PROJECT_BINARY_DIR@/tools/converter/reports_converter @CMAKE_CURRENT_SOURCE_DIR@/soma.ref --soma

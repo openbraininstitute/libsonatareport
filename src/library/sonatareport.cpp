@@ -65,6 +65,12 @@ bool SonataReport::report_exists(const std::string& name) const {
 
 void SonataReport::setup_reports() {
     if (!reports_initialized_) {
+        if (rank_ == 0 && getenv("LIBSONATA_ZERO_BASED_GIDS") != nullptr) {
+            logger->warn(
+                "LIBSONATA_ZERO_BASED_GIDS is deprecated and no longer needed. Zero-based GIDs are "
+                "now the default. Use LIBSONATAREPORT_ONE_BASED_GIDS=1 for the old default "
+                "behavior.");
+        }
         create_communicators();
         prepare_datasets();
         reports_initialized_ = true;

@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <iostream>
 #include <memory>
+#include <sstream>
 
 #include "../library/implementation_interface.hpp"
 #include "../library/sonatareport.h"
@@ -266,25 +267,25 @@ void SonataData::prepare_dataset() {
 
 void SonataData::convert_gids_to_sonata(std::vector<uint64_t>& node_ids,
                                         uint64_t population_offset) {
-    if (getenv("LIBSONATA_ZERO_BASED_GIDS") == nullptr) {
-        std::transform(std::begin(node_ids),
-                       std::end(node_ids),
-                       std::begin(node_ids),
-                       [&population_offset = population_offset](int x) {
-                           if (x == 0) {
-                               throw std::runtime_error(
-                                   "Error: node_id is 0 and input data is reported as 1-based");
-                           }
-                           return x - population_offset - 1;
-                       });
-    } else {
-        std::transform(std::begin(node_ids),
-                       std::end(node_ids),
-                       std::begin(node_ids),
-                       [&population_offset = population_offset](int x) {
-                           return x - population_offset;
-                       });
-    }
+    const uint64_t offset = population_offset +
+                            (getenv("LIBSONATAREPORT_ONE_BASED_GIDS") != nullptr ? 1 : 0);
+    std::transform(
+        std::begin(node_ids), std::end(node_ids), std::begin(node_ids), [offset](uint64_t x) {
+            if (x < offset) {
+                std::stringstream ss;
+                ss << "Error: negative raw GID detected ( gid with offset: " << x
+                   << " < offset: " << offset << "). ";
+                if (getenv("LIBSONATAREPORT_ONE_BASED_GIDS") != nullptr) {
+                    ss << "LIBSONATAREPORT_ONE_BASED_GIDS is set but the provided GIDs are "
+                          "probably 0-based. Please unset it";
+                } else {
+                    ss << "Since LIBSONATAREPORT_ONE_BASED_GIDS is not set there is probably a "
+                          "mismatch between the provided GIDs and the population offset.";
+                }
+                throw std::runtime_error(ss.str());
+            }
+            return x - offset;
+        });
 }
 
 void SonataData::write_report_header() {

@@ -27,7 +27,12 @@ std::shared_ptr<nodes_t> SummedReport::nodes_to_write(const std::string& populat
         }
     }
 
-    Sum sum{nodes, SonataData::first_gid(population_offsets_[population_name]), num_elements};
+    Sum sum{nodes,
+            SonataData::first_gid(population_offsets_[population_name]),
+            num_elements,
+            {},
+            {},
+            {}};
     auto written = std::make_shared<nodes_t>();
     if (Implementation::get_rank(report_name()) == 0) {
         sum.totals.resize(num_elements);

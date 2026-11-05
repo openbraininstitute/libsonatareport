@@ -18,7 +18,8 @@ extern "C" {
  * @param start_time start time of recording for the report
  * @param end_time stop time of recording for the report
  * @param delta_time frequency of recordings
- * @param kind type of report (soma, compartment)
+ * @param kind type of report (soma, compartment, summation, synapse, lfp), or lfp_sum for the sum
+ *             over each population's nodes, written as node 0 of the population
  * @return 0 if operator succeeded, -1 otherwise
  */
 int sonata_create_report(const char* report_name,

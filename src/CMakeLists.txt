@@ -4,6 +4,7 @@ set(sonatareport_SOURCES
     "library/sonatareport.cpp"
     "library/soma_report.cpp"
     "library/element_report.cpp"
+    "library/summed_report.cpp"
     "data/node.cpp"
     "data/soma_node.cpp"
     "data/sonata_data.cpp"

@@ -3,6 +3,7 @@
 #include <library/element_report.h>
 #include <library/report.h>
 #include <library/soma_report.h>
+#include <library/summed_report.h>
 #include <memory>
 
 using namespace bbp::sonata;
@@ -104,5 +105,33 @@ SCENARIO("Test Report class", "[Report]") {
                 REQUIRE(element_report->get_total_elements(population_name) == 10);
             }
         }
+    }
+}
+
+SCENARIO("Test SummedReport class", "[Report]") {
+    std::shared_ptr<Report> report =
+        std::make_shared<SummedReport>("summedReport", 0.0, 1.0, 0.1, report_units);
+    double value = 1;
+    report->add_node(population_name, population_offset, 1);
+    report->get_node(population_name, 1)->add_element(&value, 0);
+    report->get_node(population_name, 1)->add_element(&value, 1);
+
+    WHEN("A node of the population has fewer elements") {
+        report->add_node(population_name, population_offset, 2);
+        report->get_node(population_name, 2)->add_element(&value, 0);
+        THEN("Preparing the dataset throws") {
+            REQUIRE_THROWS(report->prepare_dataset());
+        }
+    }
+    WHEN("A node's element ids do not start from 0") {
+        report->add_node(population_name, population_offset, 2);
+        report->get_node(population_name, 2)->add_element(&value, 1);
+        report->get_node(population_name, 2)->add_element(&value, 2);
+        THEN("Preparing the dataset throws") {
+            REQUIRE_THROWS(report->prepare_dataset());
+        }
+    }
+    THEN("Recording every node at once throws: the steps would not be summed") {
+        REQUIRE_THROWS(report->record_data(0.0));
     }
 }

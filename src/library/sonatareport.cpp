@@ -6,6 +6,7 @@
 #include "implementation_interface.hpp"
 #include "soma_report.h"
 #include "sonatareport.h"
+#include "summed_report.h"
 
 namespace bbp {
 namespace sonata {
@@ -42,6 +43,8 @@ std::shared_ptr<Report> SonataReport::create_report(const std::string& name,
         reports_.emplace(name, std::make_shared<ElementReport>(name, tstart, tend, dt, units));
     } else if (kind == "soma") {
         reports_.emplace(name, std::make_shared<SomaReport>(name, tstart, tend, dt, units));
+    } else if (kind == "lfp_sum") {
+        reports_.emplace(name, std::make_shared<SummedReport>(name, tstart, tend, dt, units));
     } else {
         throw std::runtime_error("Kind '" + kind + "' doesn't exist!");
     }

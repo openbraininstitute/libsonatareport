@@ -265,10 +265,13 @@ void SonataData::prepare_dataset() {
     write_report_header();
 }
 
+uint64_t SonataData::first_gid(uint64_t population_offset) {
+    return population_offset + (getenv("LIBSONATAREPORT_ONE_BASED_GIDS") != nullptr ? 1 : 0);
+}
+
 void SonataData::convert_gids_to_sonata(std::vector<uint64_t>& node_ids,
                                         uint64_t population_offset) {
-    const uint64_t offset = population_offset +
-                            (getenv("LIBSONATAREPORT_ONE_BASED_GIDS") != nullptr ? 1 : 0);
+    const uint64_t offset = first_gid(population_offset);
     std::transform(
         std::begin(node_ids), std::end(node_ids), std::begin(node_ids), [offset](uint64_t x) {
             if (x < offset) {

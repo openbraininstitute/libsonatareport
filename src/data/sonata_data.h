@@ -82,6 +82,8 @@ class SonataData
     void record_data(double step);
     void check_and_write(double timestep);
     void convert_gids_to_sonata(std::vector<uint64_t>& node_ids, uint64_t population_offset);
+    // The gid that is written as node 0 of a population
+    static uint64_t first_gid(uint64_t population_offset);
 
     const std::vector<float>& get_report_buffer() const noexcept {
         return report_buffer_;

@@ -145,3 +145,26 @@ SCENARIO("Test Node class", "[Node]") {
         }
     }
 }
+
+SCENARIO("Test Node::add_data", "[Node]") {
+    std::vector<double> row = {1, 1, 1, 1};
+    GIVEN("A node of raw pointers") {
+        Node node{1};
+        double first = 10;
+        double second = 20;
+        node.add_element(&first, 2);
+        node.add_element(&second, 0);
+        THEN("Each element is added at its element id") {
+            node.add_data(row.begin());
+            REQUIRE(row == std::vector<double>{21, 1, 11, 1});
+        }
+    }
+    GIVEN("A node of handles") {
+        Node node{1};
+        node.add_element([] { return 10.0; }, 3);
+        THEN("Each element is added at its element id") {
+            node.add_data(row.begin());
+            REQUIRE(row == std::vector<double>{1, 1, 1, 11});
+        }
+    }
+}

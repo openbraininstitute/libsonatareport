@@ -57,6 +57,15 @@ struct Implementation {
     static uint32_t get_max_steps_to_write(const std::string& report_name, uint32_t value) {
         return TImpl::get_max_steps_to_write(report_name, value);
     }
+    static int get_rank(const std::string& report_name) {
+        return TImpl::get_rank(report_name);
+    }
+    static uint32_t get_max_elements(const std::string& report_name, uint32_t value) {
+        return TImpl::get_max_elements(report_name, value);
+    }
+    static void sum_on_first_rank(const std::string& report_name, std::vector<double>& values) {
+        TImpl::sum_on_first_rank(report_name, values);
+    }
     static void sort_spikes(std::vector<double>& spikevec_time,
                             std::vector<uint64_t>& spikevec_gid,
                             const std::string& order_by) {
@@ -282,6 +291,29 @@ struct ParallelImplementation {
         return max_steps_to_write;
     };
 
+    static int get_rank(const std::string& comm_name) {
+        int rank = 0;
+        MPI_Comm_rank(get_Comm(comm_name), &rank);
+        return rank;
+    }
+
+    static uint32_t get_max_elements(const std::string& comm_name, uint32_t value) {
+        uint32_t max_elements = value;
+        MPI_Allreduce(&value, &max_elements, 1, MPI_UNSIGNED, MPI_MAX, get_Comm(comm_name));
+        return max_elements;
+    }
+
+    static void sum_on_first_rank(const std::string& comm_name, std::vector<double>& values) {
+        const void* send = get_rank(comm_name) == 0 ? MPI_IN_PLACE : values.data();
+        MPI_Reduce(send,
+                   values.data(),
+                   static_cast<int>(values.size()),
+                   MPI_DOUBLE,
+                   MPI_SUM,
+                   0,
+                   get_Comm(comm_name));
+    }
+
     static void sort_spikes(std::vector<double>& spikevec_time,
                             std::vector<uint64_t>& spikevec_gid,
                             const std::string& order_by) {
@@ -399,6 +431,14 @@ struct SerialImplementation {
     static uint32_t get_max_steps_to_write(const std::string& /*report_name*/, uint32_t value) {
         return value;
     };
+    static int get_rank(const std::string& /*report_name*/) {
+        return 0;
+    }
+    static uint32_t get_max_elements(const std::string& /*report_name*/, uint32_t value) {
+        return value;
+    }
+    static void sum_on_first_rank(const std::string& /*report_name*/,
+                                  std::vector<double>& /*values*/) { }
     static void sort_spikes(std::vector<double>& spikevec_time,
                             std::vector<uint64_t>& spikevec_gid,
                             const std::string& order_by) {

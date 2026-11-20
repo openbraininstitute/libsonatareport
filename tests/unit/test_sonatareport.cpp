@@ -19,6 +19,16 @@ SCENARIO("Test SonataReport API", "[sonatareport]") {
     const double dt = 0.1;
     uint32_t element_id = 142;
 
+    GIVEN("A new summed LFP report") {
+        sonata_clear();
+        THEN("Its kind is known") {
+            REQUIRE(
+                sonata_create_report("mySummedReport", tstart, tend, dt, report_units, "lfp_sum") ==
+                0);
+            REQUIRE(sonata_get_num_reports() == 1);
+        }
+    }
+
     GIVEN("A new compartment report") {
         sonata_clear();
         int ret_report = sonata_create_report(

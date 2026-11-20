@@ -53,6 +53,16 @@ class Report
     void set_max_buffer_size(size_t buffer_size);
 
   protected:
+    // The nodes written for a population, from the nodes recorded on this rank. Called in the same
+    // order on every rank, so it may use collectives.
+    virtual std::shared_ptr<nodes_t> nodes_to_write(const std::string& /*population_name*/,
+                                                    std::shared_ptr<nodes_t> nodes) {
+        return nodes;
+    }
+    const std::string& report_name() const noexcept {
+        return report_name_;
+    }
+
     using populations_t = std::map<std::string, std::shared_ptr<nodes_t>>;
     std::shared_ptr<populations_t> populations_;
     std::map<std::string, uint64_t> population_offsets_;

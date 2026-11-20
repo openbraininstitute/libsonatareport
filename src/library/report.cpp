@@ -80,6 +80,7 @@ int Report::prepare_dataset() {
             // collectives
             nodes = std::make_shared<nodes_t>();
         }
+        nodes = nodes_to_write(population_name, nodes);
         sonata_populations_.push_back(
             std::make_unique<SonataData>(report_name_,
                                          population_name,

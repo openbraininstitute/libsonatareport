@@ -67,6 +67,16 @@ void Node::fill_data(std::vector<float>::iterator it) {
     }
 }
 
+void Node::add_data(std::vector<double>::iterator it) const {
+    assert(elements_.empty() || element_handles_.empty());
+    for (size_t i = 0; i < elements_.size(); ++i) {
+        it[element_ids_[i]] += *elements_[i];
+    }
+    for (size_t i = 0; i < element_handles_.size(); ++i) {
+        it[element_ids_[i]] += element_handles_[i]();
+    }
+}
+
 void Node::refresh_pointers(std::function<double*(double*)> refresh_function) {
     if (!elements_.empty()) {
         std::transform(elements_.begin(), elements_.end(), elements_.begin(), refresh_function);
